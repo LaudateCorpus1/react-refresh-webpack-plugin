@@ -69,25 +69,33 @@ function ReactRefreshLoader(source, inputSourceMap, meta) {
       moduleSystem,
     });
 
-    if (this.sourceMap) {
-      let originalSourceMap = inputSourceMap;
-      if (!originalSourceMap) {
-        originalSourceMap = getIdentitySourceMap(source, this.resourcePath);
-      }
+    // This code adds significant startup time to our local Webpack build, so we are
+    // commenting it out for now. This enables a more accurate debugging experience
+    // in our source maps (e.g. your selected line doesn't ever jump around), but it
+    // is not enough of an improvement or necessity to justify the additional 2 minutes
+    // it adds to our initial build times.
 
-      const node = SourceNode.fromStringWithSourceMap(
-        source,
-        await new SourceMapConsumer(originalSourceMap)
-      );
+    // if (this.sourceMap) {
+    //   let originalSourceMap = inputSourceMap;
+    //   if (!originalSourceMap) {
+    //     originalSourceMap = getIdentitySourceMap(source, this.resourcePath);
+    //   }
 
-      node.prepend([RefreshSetupRuntime, '\n\n']);
-      node.add(['\n\n', RefreshModuleRuntime]);
+    //   const node = SourceNode.fromStringWithSourceMap(
+    //     source,
+    //     await new SourceMapConsumer(originalSourceMap)
+    //   );
 
-      const { code, map } = node.toStringWithSourceMap();
-      return [code, map.toJSON()];
-    } else {
-      return [[RefreshSetupRuntime, source, RefreshModuleRuntime].join('\n\n'), inputSourceMap];
-    }
+    //   node.prepend([RefreshSetupRuntime, '\n\n']);
+    //   node.add(['\n\n', RefreshModuleRuntime]);
+
+    //   const { code, map } = node.toStringWithSourceMap();
+    //   return [code, map.toJSON()];
+    // } else {
+    //   return [[RefreshSetupRuntime, source, RefreshModuleRuntime].join('\n\n'), inputSourceMap];
+    // }
+
+    return [[RefreshSetupRuntime, source, RefreshModuleRuntime].join('\n\n'), inputSourceMap];
   }
 
   _loader.call(this, source, inputSourceMap).then(
